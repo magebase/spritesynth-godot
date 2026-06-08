@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://spritesynth_dock"]
+
+[ext_resource type="Script" path="res://addons/spritesynth/spritesynth_dock.gd" id="1"]
+
+[node name="SpritesynthDock" type="VBoxContainer"]
+custom_minimum_size = Vector2(280, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="Title" type="Label" parent="."]
+text = "SpriteSynth Generator"
+theme_override_font_sizes/font_size = 16
+
+[node name="ApiKeyLabel" type="Label" parent="."]
+text = "API Key"
+
+[node name="ApiKeyInput" type="LineEdit" parent="."]
+placeholder_text = "Enter your spritesynth API key"
+
+[node name="PromptLabel" type="Label" parent="."]
+text = "Prompt"
+
+[node name="PromptInput" type="TextEdit" parent="."]
+custom_minimum_size = Vector2(0, 60)
+placeholder_text = "Describe the pixel art to generate..."
+
+[node name="GenerateBtn" type="Button" parent="."]
+text = "Generate"
+
+[node name="StatusLabel" type="Label" parent="."]
+text = ""
