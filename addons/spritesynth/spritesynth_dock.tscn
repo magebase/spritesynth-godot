@@ -15,13 +15,34 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
+; ===== GENERATE TAB =====
 [node name="Generate" type="VBoxContainer" parent="TabContainer"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
+[node name="ModeDropdown" type="OptionButton" parent="TabContainer/Generate"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DynamicFields" type="VBoxContainer" parent="TabContainer/Generate"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="StyleImageUrl" type="LineEdit" parent="TabContainer/Generate/DynamicFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Style image URL"
+visible = false
+
+[node name="UiStyleInput" type="LineEdit" parent="TabContainer/Generate/DynamicFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "UI style (optional)"
+visible = false
+
 [node name="PromptLabel" type="Label" parent="TabContainer/Generate"]
 layout_mode = 2
-size_flags_horizontal = 0
 text = "Prompt:"
 
 [node name="PromptText" type="TextEdit" parent="TabContainer/Generate"]
@@ -85,8 +106,13 @@ size_flags_horizontal = 3
 
 [node name="GenerateBtn" type="Button" parent="TabContainer/Generate"]
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 3
 text = "Generate"
+
+[node name="ProgressBar" type="ProgressBar" parent="TabContainer/Generate"]
+layout_mode = 2
+size_flags_horizontal = 3
+visible = false
 
 [node name="StatusLabel" type="Label" parent="TabContainer/Generate"]
 layout_mode = 2
@@ -102,73 +128,210 @@ expand_mode = 1
 stretch_mode = 4
 visible = false
 
-[node name="History" type="VBoxContainer" parent="TabContainer"]
+[node name="ImportBtn" type="Button" parent="TabContainer/Generate"]
 layout_mode = 2
-theme_override_constants/separation = 6
+size_flags_horizontal = 3
+text = "Import to Project"
+visible = false
 
-[node name="HistoryHeader" type="HBoxContainer" parent="TabContainer/History"]
+; ===== MANAGE TAB =====
+[node name="Manage" type="VBoxContainer" parent="TabContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ManageTabBar" type="TabBar" parent="TabContainer/Manage"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HistoryTitle" type="Label" parent="TabContainer/History/HistoryHeader"]
+[node name="ManageHeader" type="HBoxContainer" parent="TabContainer/Manage"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Generation History"
 
-[node name="RefreshBtn" type="Button" parent="TabContainer/History/HistoryHeader"]
+[node name="SearchInput" type="LineEdit" parent="TabContainer/Manage/ManageHeader"]
 layout_mode = 2
-text = "Refresh"
+size_flags_horizontal = 3
+placeholder_text = "Search..."
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/History"]
+[node name="CreateBtn" type="Button" parent="TabContainer/Manage/ManageHeader"]
+layout_mode = 2
+text = "+ New"
+
+[node name="ManageScroll" type="ScrollContainer" parent="TabContainer/Manage"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HistoryList" type="VBoxContainer" parent="TabContainer/History/ScrollContainer"]
+[node name="ManageList" type="VBoxContainer" parent="TabContainer/Manage/ManageScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="EmptyLabel" type="Label" parent="TabContainer/History"]
+[node name="ManageEmptyLabel" type="Label" parent="TabContainer/Manage"]
 layout_mode = 2
 size_flags_horizontal = 0
-text = "No generations yet"
+text = "No items"
 
-[node name="Settings" type="VBoxContainer" parent="TabContainer"]
+[node name="PaginationBar" type="HBoxContainer" parent="TabContainer/Manage"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrevBtn" type="Button" parent="TabContainer/Manage/PaginationBar"]
+layout_mode = 2
+text = "< Prev"
+disabled = true
+
+[node name="PageLabel" type="Label" parent="TabContainer/Manage/PaginationBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+text = "Page 1"
+
+[node name="NextBtn" type="Button" parent="TabContainer/Manage/PaginationBar"]
+layout_mode = 2
+text = "Next >"
+disabled = true
+
+; ===== TOOLS TAB =====
+[node name="Tools" type="VBoxContainer" parent="TabContainer"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="ApiKeyLabel" type="Label" parent="TabContainer/Settings"]
+; Image Ops
+[node name="ImageOpsLabel" type="Label" parent="TabContainer/Tools"]
+layout_mode = 2
+text = "Image Operations:"
+
+[node name="ImageOpsGrid" type="GridContainer" parent="TabContainer/Tools"]
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 3
+
+[node name="ToPixelBtn" type="Button" parent="TabContainer/Tools/ImageOpsGrid"]
+layout_mode = 2
+text = "To Pixel"
+
+[node name="ResizeBtn" type="Button" parent="TabContainer/Tools/ImageOpsGrid"]
+layout_mode = 2
+text = "Resize"
+
+[node name="RemoveBgBtn" type="Button" parent="TabContainer/Tools/ImageOpsGrid"]
+layout_mode = 2
+text = "Remove BG"
+
+[node name="InpaintBtn" type="Button" parent="TabContainer/Tools/ImageOpsGrid"]
+layout_mode = 2
+text = "Inpaint"
+
+[node name="EditBtn" type="Button" parent="TabContainer/Tools/ImageOpsGrid"]
+layout_mode = 2
+text = "Edit"
+
+[node name="RotateBtn" type="Button" parent="TabContainer/Tools/ImageOpsGrid"]
+layout_mode = 2
+text = "Rotate"
+
+; Image Op Fields (dynamic, mostly hidden initially)
+[node name="ImageOpFields" type="VBoxContainer" parent="TabContainer/Tools"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
+
+[node name="OpImageLabel" type="Label" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+text = "Image URL:"
+
+[node name="OpImageInput" type="LineEdit" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Image URL"
+visible = false
+
+[node name="OpPromptLabel" type="Label" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+text = "Prompt:"
+visible = false
+
+[node name="OpPromptInput" type="LineEdit" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Prompt"
+visible = false
+
+[node name="OpParamLabel" type="Label" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+text = "Parameter:"
+visible = false
+
+[node name="OpParamInput" type="LineEdit" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Parameter"
+visible = false
+
+[node name="OpExecuteBtn" type="Button" parent="TabContainer/Tools/ImageOpFields"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Execute"
+visible = false
+
+; History
+[node name="HistorySeparator" type="HSeparator" parent="TabContainer/Tools"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HistoryLabel" type="Label" parent="TabContainer/Tools"]
+layout_mode = 2
+text = "Recent History:"
+
+[node name="ToolsScroll" type="ScrollContainer" parent="TabContainer/Tools"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ToolsHistoryList" type="VBoxContainer" parent="TabContainer/Tools/ToolsScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+; Settings
+[node name="SettingsSeparator" type="HSeparator" parent="TabContainer/Tools"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SettingsSection" type="VBoxContainer" parent="TabContainer/Tools"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="ApiKeyLabel" type="Label" parent="TabContainer/Tools/SettingsSection"]
 layout_mode = 2
 text = "API Key:"
 
-[node name="ApiKeyInput" type="LineEdit" parent="TabContainer/Settings"]
+[node name="ApiKeyInput" type="LineEdit" parent="TabContainer/Tools/SettingsSection"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Enter your SpriteSynth API key"
 secret = true
 
-[node name="KeySourceLabel" type="Label" parent="TabContainer/Settings"]
+[node name="KeySourceLabel" type="Label" parent="TabContainer/Tools/SettingsSection"]
 layout_mode = 2
 size_flags_horizontal = 3
 autowrap_mode = 1
 
-[node name="SaveKeyBtn" type="Button" parent="TabContainer/Settings"]
-layout_mode = 2
-text = "Save API Key"
-
-[node name="TestConnBtn" type="Button" parent="TabContainer/Settings"]
-layout_mode = 2
-text = "Test Connection"
-
-[node name="Separator2" type="HSeparator" parent="TabContainer/Settings"]
+[node name="SaveKeyBtn" type="Button" parent="TabContainer/Tools/SettingsSection"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "Save API Key"
 
-[node name="ClearHistoryBtn" type="Button" parent="TabContainer/Settings"]
+[node name="TestConnBtn" type="Button" parent="TabContainer/Tools/SettingsSection"]
 layout_mode = 2
+size_flags_horizontal = 3
+text = "Test Connection"
+
+[node name="ClearHistoryBtn" type="Button" parent="TabContainer/Tools/SettingsSection"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Clear History"
 
-[node name="SettingsStatusLabel" type="Label" parent="TabContainer/Settings"]
+[node name="ToolsStatusLabel" type="Label" parent="TabContainer/Tools/SettingsSection"]
 layout_mode = 2
 size_flags_horizontal = 3
 autowrap_mode = 1

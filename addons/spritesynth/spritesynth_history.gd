@@ -4,49 +4,66 @@ extends RefCounted
 
 const HISTORY_PATH: String = "user://spritesynth/history.json"
 const THUMBNAILS_DIR: String = "user://spritesynth/thumbnails/"
+const MAX_ENTRIES: int = 200
 
 static var _cache: Array[Dictionary] = []
 
 
-static func get_history() -> Array[Dictionary]:
-	if not _cache.is_empty():
+static func get_history(type_filter: String = "") -> Array[Dictionary]:
+	if not _cache.is_empty() and type_filter.is_empty():
 		return _cache
 	if not FileAccess.file_exists(HISTORY_PATH):
 		return []
-	var file: FileAccess = FileAccess.open(HISTORY_PATH, FileAccess.READ)
-	if file == null:
-		push_warning("Spritesynth: could not open history file")
-		return []
-	var text: String = file.get_as_text()
-	file.close()
-	if text.is_empty():
-		return []
-	var json: JSON = JSON.new()
-	var err: Error = json.parse(text)
-	if err != OK:
-		push_warning("Spritesynth: history JSON parse error: " + error_string(err))
-		_backup_and_reset()
-		return []
-	var data = json.data
-	if data is Array:
-		_cache = data
+	if _cache.is_empty():
+		var file: FileAccess = FileAccess.open(HISTORY_PATH, FileAccess.READ)
+		if file == null:
+			push_warning("Spritesynth: could not open history file")
+			return []
+		var text: String = file.get_as_text()
+		file.close()
+		if text.is_empty():
+			return []
+		var json: JSON = JSON.new()
+		var err: Error = json.parse(text)
+		if err != OK:
+			push_warning("Spritesynth: history JSON parse error: " + error_string(err))
+			_backup_and_reset()
+			return []
+		var data = json.data
+		if data is Array:
+			_cache = data
+
+	if type_filter.is_empty():
 		return _cache
-	return []
+
+	var filtered: Array[Dictionary] = []
+	for entry in _cache:
+		if entry.get("type", "") == type_filter:
+			filtered.append(entry)
+	return filtered
 
 
 static func add_entry(entry: Dictionary) -> void:
+	if not entry.has("type"):
+		entry["type"] = "generation"
+	if not entry.has("created_at"):
+		entry["created_at"] = Time.get_datetime_string_from_system()
+	if not entry.has("timestamp"):
+		entry["timestamp"] = Time.get_unix_time_from_system()
+
 	var history: Array[Dictionary] = get_history()
 	history.insert(0, entry)
+
+	if history.size() > MAX_ENTRIES:
+		var removed: Array[Dictionary] = history.slice(MAX_ENTRIES)
+		for rem in removed:
+			var thumb_path: String = rem.get("thumbnail_path", "")
+			if not thumb_path.is_empty() and FileAccess.file_exists(thumb_path):
+				DirAccess.remove_absolute(thumb_path)
+		history = history.slice(0, MAX_ENTRIES)
+
 	_cache = history
-
-	DirAccess.make_dir_recursive_absolute(HISTORY_PATH.get_base_dir())
-
-	var file: FileAccess = FileAccess.open(HISTORY_PATH, FileAccess.WRITE)
-	if file == null:
-		push_warning("Spritesynth: could not write history file")
-		return
-	file.store_string(JSON.stringify(history, "\t", false))
-	file.close()
+	_save(history)
 
 
 static func remove_entry(index: int) -> void:
@@ -60,22 +77,13 @@ static func remove_entry(index: int) -> void:
 
 	history.remove_at(index)
 	_cache = history
-
-	DirAccess.make_dir_recursive_absolute(HISTORY_PATH.get_base_dir())
-
-	var file: FileAccess = FileAccess.open(HISTORY_PATH, FileAccess.WRITE)
-	if file == null:
-		return
-	file.store_string(JSON.stringify(history, "\t", false))
-	file.close()
+	_save(history)
 
 
 static func clear_all() -> void:
 	_cache = []
-
 	if FileAccess.file_exists(HISTORY_PATH):
 		DirAccess.remove_absolute(HISTORY_PATH)
-
 	var thumb_dir: String = THUMBNAILS_DIR
 	if DirAccess.dir_exists_absolute(thumb_dir):
 		var dir: DirAccess = DirAccess.open(thumb_dir)
@@ -103,6 +111,16 @@ static func save_thumbnail(entry_index: int, image: Image) -> String:
 
 static func reload() -> void:
 	_cache = []
+
+
+static func _save(history: Array[Dictionary]) -> void:
+	DirAccess.make_dir_recursive_absolute(HISTORY_PATH.get_base_dir())
+	var file: FileAccess = FileAccess.open(HISTORY_PATH, FileAccess.WRITE)
+	if file == null:
+		push_warning("Spritesynth: could not write history file")
+		return
+	file.store_string(JSON.stringify(history, "\t", false))
+	file.close()
 
 
 static func _backup_and_reset() -> void:
